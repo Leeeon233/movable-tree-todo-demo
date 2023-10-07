@@ -7,6 +7,7 @@ import {
   ENTER_KEY,
 } from "./constants";
 import TodoItem from "./todoItem";
+import TodoTree from "./todoTree";
 
 declare var Router: any;
 const TodoApp = ({ model }: IAppProps) => {
@@ -55,6 +56,7 @@ const TodoApp = ({ model }: IAppProps) => {
         editing={editing === todo.id}
         onSave={(text) => {
           model.save(todo, text);
+          setEditing(null);
         }}
         onCancel={() => cancel()}
       />
@@ -71,7 +73,7 @@ const TodoApp = ({ model }: IAppProps) => {
     var val = newInputRef.current!.value.trim();
 
     if (val) {
-      model.addTodo(val);
+      model.addRootTodo(val);
       newInputRef.current!.value = "";
     }
   };
@@ -103,7 +105,15 @@ const TodoApp = ({ model }: IAppProps) => {
                 checked={activeTodoCount === 0}
               />
               <label htmlFor="toggle-all">Mark all as complete</label>
-              <ul className="todo-list">{todoItems}</ul>
+              {/* <ul className="todo-list">{todoItems}</ul>
+              <p>Tree</p> */}
+              <TodoTree
+                data={shownTodos}
+                model={model}
+                editing={editing}
+                setEditing={setEditing}
+                cancel={cancel}
+              />
             </section>
           </>
         ) : (

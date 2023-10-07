@@ -1,7 +1,15 @@
+interface ITodoMeta {
+  title: string;
+  completed: boolean;
+  expanded: boolean;
+}
+
 interface ITodo {
   id: string;
   title: string;
   completed: boolean;
+  expanded: boolean;
+  parentId: string | undefined;
 }
 
 interface ITodoItemProps {
@@ -32,7 +40,9 @@ interface ITodoModel {
   onChanges: Array<any>;
   subscribe(onChange);
   inform();
-  addTodo(title: string);
+  addRootTodo(title: string);
+  addChildTodo(title: string, parent: string);
+  move(target: ITodo, parent: ITodo);
   toggleAll(checked);
   toggle(todoToToggle);
   destroy(todo);

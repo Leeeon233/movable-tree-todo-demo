@@ -21,13 +21,27 @@ class Utils {
     return count === 1 ? word : word + "s";
   }
 
-  public static store(namespace: string, data?: any) {
+  public static store(
+    namespace: string,
+    data?: Uint8Array
+  ): Uint8Array | void | undefined {
     if (data) {
-      return localStorage.setItem(namespace, JSON.stringify(data));
+      return localStorage.setItem(
+        namespace,
+        btoa(String.fromCharCode.apply(null, data))
+      );
     }
 
     var store = localStorage.getItem(namespace);
-    return (store && JSON.parse(store)) || [];
+    if (store) {
+      const stringData = atob(store);
+      const array = new Uint8Array(stringData.length);
+      for (let i = 0; i < stringData.length; i++) {
+        array[i] = stringData.charCodeAt(i);
+      }
+      return array;
+    }
+    return undefined;
   }
 
   public static extend(...objs: any[]): any {
