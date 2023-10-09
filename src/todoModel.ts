@@ -2,11 +2,10 @@
 /*jshint white:false */
 /*jshint trailing:false */
 /*jshint newcap:false */
+import { ITodo, ITodoModel } from "./interfaces";
+import { Loro, LoroTree, TreeID, TreeNode } from "loro-crdt";
 
-import { Utils } from "./utils";
-import { Loro, LoroTree } from "loro-crdt";
-
-export const ROOT_KEY = "0";
+export const ROOT_KEY = null;
 
 // Generic "model" object. You can use whatever
 // framework you want. For this application it
@@ -19,35 +18,37 @@ class TodoModel implements ITodoModel {
   public onChanges: Array<any>;
   loro: Loro;
   root: LoroTree;
-
+  sync: boolean = true;
   constructor(loro: Loro, key: string) {
-    this.key = loro.peerId.toString();
+    this.key = key;
     this.loro = loro;
-    const data = Utils.store(key);
-    if (data) {
-      console.log(data);
-      this.loro.import(data);
-    }
-    this.root = this.loro.getTree("root");
-    this.todos = this.getTodos();
-
     this.onChanges = [];
+    this.root = this.loro.getTree("root");
+    const state = this.root.getDeepValue().roots;
+    this.todos = state.map((root) => {
+      return this.getTodos(root);
+    });
+    this.loro.subscribe((_e) => {
+      this.inform();
+    });
   }
 
-  private getTodos(): ITodo[] {
-    const value = this.root.getDeepValue();
-    const roots = value.roots;
-    return roots.map((v) => {
-      const meta = v.meta;
-      return {
-        id: v.id,
-        parentId: v.parent,
-        children: v.children,
-        title: meta.title,
-        completed: meta.completed,
-        expanded: meta.expanded,
-      };
-    });
+  private getTodos(root: TreeNode): ITodo {
+    const meta = root.meta;
+    return {
+      id: root.id,
+      parentId: root.parent,
+      children: root.children.map((node) => {
+        return this.getTodos(node);
+      }),
+      title: meta.title,
+      completed: meta.completed,
+      expanded: meta.expanded,
+    };
+  }
+
+  public setSync(sync: boolean) {
+    this.sync = sync;
   }
 
   public subscribe(onChange: any) {
@@ -55,82 +56,105 @@ class TodoModel implements ITodoModel {
   }
 
   public inform() {
-    Utils.store(this.key, this.loro.exportSnapshot());
-    this.todos = this.getTodos();
+    // Utils.store(this.key, this.loro.exportSnapshot());
+    // TODO: use loro diff
+    const state = this.root.getDeepValue();
+    this.todos = state.roots.map((root) => {
+      return this.getTodos(root);
+    });
     this.onChanges.forEach(function (cb) {
       cb();
     });
   }
 
-  public addChildTodo(title: string, parentId: string) {
-    const todo: ITodo = {
-      id: Utils.uuid(),
-      title: title,
-      completed: false,
-      expanded: true,
-      parentId,
-    };
-    this.todos = this.todos.concat(todo);
-    this.inform();
+  public addChildTodo(title: string, parentId: TreeID): TreeID {
+    let id;
+    this.loro.transact((txn) => {
+      id = this.root.createChild(txn, parentId);
+      this.root.insertMeta(txn, id, "title", title);
+      this.root.insertMeta(txn, id, "completed", false);
+      this.root.insertMeta(txn, id, "expanded", true);
+    });
+    // this.inform();
+    return id!;
   }
 
-  public addRootTodo(title: string) {
-    this.todos = this.todos.concat({
-      id: Utils.uuid(),
-      title: title,
-      completed: false,
-      expanded: true,
-      parentId: ROOT_KEY,
+  public addRootTodo(title: string): TreeID {
+    let id;
+    this.loro.transact((txn) => {
+      id = this.root.create(txn);
+      this.root.insertMeta(txn, id, "title", title);
+      this.root.insertMeta(txn, id, "completed", false);
+      this.root.insertMeta(txn, id, "expanded", true);
     });
-
-    this.inform();
+    // this.inform();
+    return id!;
   }
 
-  public move(target: ITodo, parent: ITodo) {
-    this.todos = this.todos.map((v) => {
-      return v.id === target.id ? { ...v, parentId: parent.id } : v;
+  public asRoot(target: TreeID) {
+    this.loro.transact((txn) => {
+      this.root.asRoot(txn, target);
     });
-    this.inform();
+    // this.inform();
   }
 
-  public toggleAll(checked: Boolean) {
-    // Note: It's usually better to use immutable data structures since they're
-    // easier to reason about and React works very well with them. That's why
-    // we use map(), filter() and reduce() everywhere instead of mutating the
-    // array or todo items themselves.
-    this.todos = this.todos.map<ITodo>((todo: ITodo) => {
-      return Utils.extend({}, todo, { completed: checked });
+  public move(target: TreeID, parent: TreeID) {
+    this.loro.transact((txn) => {
+      this.root.move(txn, target, parent);
     });
 
-    this.inform();
+    // this.inform();
   }
 
-  public toggle(todoToToggle: ITodo) {
-    this.todos = this.todos.map<ITodo>((todo: ITodo) => {
-      return todo.id !== todoToToggle.id
-        ? todo
-        : Utils.extend({}, todo, { completed: !todo.completed });
+  changeExpanded(target: TreeID, expanded: boolean) {
+    this.loro.transact((txn) => {
+      this.root.insertMeta(txn, target, "expanded", expanded);
     });
-
-    this.inform();
+    // this.inform();
   }
 
-  public destroy(todo: ITodo) {
-    this.todos = this.todos.filter(function (candidate) {
-      return candidate.id !== todo.id;
+  public toggleAll(checked: boolean) {
+    this.loro.transact((txn) => {
+      const nodes = this.root.nodes;
+      for (const node of nodes) {
+        this.root.insertMeta(txn, node, "completed", checked);
+      }
     });
-
-    this.inform();
+    // this.inform();
   }
 
-  public save(todoToSave: ITodo, text: string) {
-    this.todos = this.todos.map(function (todo) {
-      return todo.id !== todoToSave.id
-        ? todo
-        : Utils.extend({}, todo, { title: text });
+  public toggle(todoToToggle: TreeID) {
+    this.loro.transact((txn) => {
+      const checked = this.root.getMeta(txn, todoToToggle, "completed");
+      this.root.insertMeta(txn, todoToToggle, "completed", !checked);
+    });
+    // this.inform();
+  }
+
+  public destroy(id: TreeID) {
+    this.loro.transact((txn) => {
+      this.root.delete(txn, id);
     });
 
-    this.inform();
+    // this.inform();
+  }
+
+  public save(todoToSave: TreeID, text: string) {
+    this.loro.transact((txn) => {
+      this.root.insertMeta(txn, todoToSave, "title", text);
+    });
+    // this.inform();
+  }
+
+  public updateFromPeer(other: TodoModel) {
+    if (this.sync) {
+      const thisVersion = this.loro.version();
+      const otherVersion = other.loro.version();
+      if (!isArrayBufferEqual(thisVersion, otherVersion)) {
+        const update = other.loro.exportFrom(thisVersion);
+        this.loro.import(update);
+      }
+    }
   }
 
   public clearCompleted() {
@@ -138,8 +162,31 @@ class TodoModel implements ITodoModel {
       return !todo.completed;
     });
 
-    this.inform();
+    this.loro.transact((txn) => {
+      const nodes = this.root.nodes;
+      for (const node of nodes) {
+        const completed = this.root.getMeta(txn, node, "completed");
+        if (completed) {
+          this.root.delete(txn, node);
+        }
+      }
+    });
+
+    // this.inform();
   }
 }
 
+function isArrayBufferEqual(a: Uint8Array, b: Uint8Array) {
+  if (a.byteLength !== b.byteLength) {
+    return false;
+  }
+
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) {
+      return false;
+    }
+  }
+
+  return true;
+}
 export { TodoModel };

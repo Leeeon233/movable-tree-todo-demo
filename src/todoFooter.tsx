@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import { Utils } from "./utils";
 import { ALL_TODOS, ACTIVE_TODOS, COMPLETED_TODOS } from "./constants";
+import { ITodoFooterProps } from "./interfaces";
 
 const TodoFooter = ({
   completedCount,

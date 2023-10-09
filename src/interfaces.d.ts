@@ -1,3 +1,5 @@
+import { TreeID } from "loro-crdt";
+
 interface ITodoMeta {
   title: string;
   completed: boolean;
@@ -5,11 +7,12 @@ interface ITodoMeta {
 }
 
 interface ITodo {
-  id: string;
+  id: TreeID;
   title: string;
   completed: boolean;
   expanded: boolean;
-  parentId: string | undefined;
+  parentId: TreeID | null;
+  children: ITodo[];
 }
 
 interface ITodoItemProps {
@@ -21,6 +24,7 @@ interface ITodoItemProps {
   onEdit: () => void;
   onCancel: (event: any) => void;
   onToggle: () => void;
+  onAddChild: () => void;
 }
 
 interface ITodoItemState {
@@ -40,13 +44,15 @@ interface ITodoModel {
   onChanges: Array<any>;
   subscribe(onChange);
   inform();
-  addRootTodo(title: string);
-  addChildTodo(title: string, parent: string);
-  move(target: ITodo, parent: ITodo);
+  addRootTodo(title: string): TreeID;
+  addChildTodo(title: string, parent: TreeID): TreeID;
+  move(target: TreeID, parent: TreeID);
+  asRoot(target: TreeID);
+  changeExpanded(target: TreeID, expanded: boolean);
   toggleAll(checked);
-  toggle(todoToToggle);
-  destroy(todo);
-  save(todoToSave, text);
+  toggle(todoToToggle: TreeID);
+  destroy(todo: TreeID);
+  save(todoToSave: TreeID, text: string);
   clearCompleted();
 }
 

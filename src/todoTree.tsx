@@ -1,32 +1,53 @@
-import SortableTree, {
-  TreeItem,
-  getTreeFromFlatData,
-} from "@nosferatu500/react-sortable-tree";
+import SortableTree from "@nosferatu500/react-sortable-tree";
 import "@nosferatu500/react-sortable-tree/style.css";
 import TodoItem from "./todoItem";
-import { ROOT_KEY } from "./todoModel";
+import { ITodo, ITodoModel } from "./interfaces";
+import { ACTIVE_TODOS, COMPLETED_TODOS } from "./constants";
+import { allTodoCount, getActiveTodoCount } from "./todoApp";
 
 interface TodoTreeProps {
-  data: ITodo[];
   model: ITodoModel;
   editing: string | null;
+  nowShowing: string;
   setEditing: (id: string | null) => void;
   cancel: () => void;
 }
 
+const filterTodo = (todos: ITodo[], nowShowing: string): ITodo[] => {
+  return todos
+    .map((todo) => {
+      const children = filterTodo(todo.children, nowShowing);
+      const childrenActiveCount = getActiveTodoCount(children);
+      const childrenAllCount = allTodoCount(children);
+      return { ...todo, children, childrenActiveCount, childrenAllCount };
+    })
+    .filter((todo) => {
+      switch (nowShowing) {
+        case ACTIVE_TODOS:
+          return !todo.completed || todo.childrenActiveCount > 0;
+        case COMPLETED_TODOS:
+          return todo.completed && todo.childrenActiveCount === 0;
+        default:
+          return true;
+      }
+    });
+};
+
 const TodoTree = ({
-  data,
   model,
   setEditing,
   editing,
   cancel,
+  nowShowing,
 }: TodoTreeProps) => {
-  const treeData = getTreeFromFlatData({
-    flatData: data,
-    getKey: (v) => v.id,
-    getParentKey: (v) => v.parentId,
-    rootKey: ROOT_KEY,
-  });
+  const treeData = filterTodo(model.todos, nowShowing);
+
+  // const treeData = getTreeFromFlatData({
+  //   flatData: data,
+  //   getKey: (v) => v.id,
+  //   getParentKey: (v) => v.parentId,
+  //   rootKey: ROOT_KEY,
+  // });
 
   return (
     <div style={{ height: 400 }}>
@@ -37,30 +58,42 @@ const TodoTree = ({
         onMoveNode={(params) => {
           const target = params.node;
           const parent = params.nextParentNode;
-          model.move(target, parent);
+          if (parent) {
+            model.move(target.id, parent.id);
+          } else {
+            model.asRoot(target.id);
+          }
+        }}
+        onVisibilityToggle={(p) => {
+          const target = p.node;
+          model.changeExpanded(target.id, p.expanded);
         }}
         onChange={(treeData) => {
           //   console.log(treeData);
         }}
         generateNodeProps={(params) => {
-          const todo = params.node;
+          const todo: ITodo = params.node;
           const node = (
             <TodoItem
               key={todo.id}
               todo={todo}
               onToggle={() => {
-                model.toggle(todo);
+                model.toggle(todo.id);
               }}
               onDestroy={() => {
-                model.destroy(todo);
+                model.destroy(todo.id);
               }}
               onEdit={() => {
                 setEditing(todo.id);
               }}
               editing={editing === todo.id}
               onSave={(text) => {
-                model.save(todo, text);
+                model.save(todo.id, text);
                 setEditing(null);
+              }}
+              onAddChild={() => {
+                const id = model.addChildTodo("", todo.id);
+                setEditing(id);
               }}
               onCancel={() => cancel()}
             />

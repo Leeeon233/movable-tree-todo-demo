@@ -1,6 +1,7 @@
 /// <reference path="./interfaces.d.ts"/>
 import classNames from "classnames";
 import React, { useEffect, useRef, useState } from "react";
+import { ITodoItemProps } from "./interfaces";
 
 const ESCAPE_KEY = 27;
 const ENTER_KEY = 13;
@@ -12,6 +13,7 @@ const TodoItem = ({
   onDestroy,
   onSave,
   onCancel,
+  onAddChild,
   onEdit,
 }: ITodoItemProps) => {
   const [editText, setEditText] = useState("");
@@ -70,6 +72,7 @@ const TodoItem = ({
           onChange={onToggle}
         />
         <label onDoubleClick={(_) => handleEdit()}>{todo.title}</label>
+        <button className="addChild" onClick={onAddChild} />
         <button className="destroy" onClick={onDestroy} />
       </div>
       <input

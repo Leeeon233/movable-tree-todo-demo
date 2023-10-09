@@ -28,7 +28,7 @@ body {
   background: #f5f5f5;
   color: #111111;
   min-width: 230px;
-  max-width: 550px;
+  max-width: 1440px;
   margin: 0 auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -153,7 +153,7 @@ body {
 
 .todo-list li {
   /* position: relative; */
-  width: 360px;
+  width: 300px;
   font-size: 24px;
   border-bottom: 1px solid #ededed;
 }
@@ -175,7 +175,7 @@ body {
 }
 
 .todo-list li.editing .view {
-  display: none;
+  display: flex;
 }
 
 .todo-list li .toggle {
@@ -223,6 +223,35 @@ body {
 .todo-list li.completed label {
   color: #949494;
   text-decoration: line-through;
+}
+
+.todo-list li .addChild {
+  display: none;
+  position: absolute;
+  top: 0;
+  right: 40px;
+  bottom: 0;
+  width: 40px;
+  height: 40px;
+  margin: auto 0;
+  font-size: 30px;
+  color: #949494;
+  transition: color 0.2s ease-out;
+}
+.todo-list li .addChild:hover,
+.todo-list li .addChild:focus {
+  color: #c18585;
+}
+
+.todo-list li .addChild:after {
+  content: "+";
+  display: block;
+  height: 100%;
+  line-height: 1.1;
+}
+
+.todo-list li:hover .addChild {
+  display: block;
 }
 
 .todo-list li .destroy {
