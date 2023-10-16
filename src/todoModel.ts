@@ -32,8 +32,8 @@ class TodoModel implements ITodoModel {
       return this.getTodos(root);
     });
     this.loro.subscribe((_e) => {
-      this.inform();
       if (!this.isCheckout) {
+        this.inform();
         addHistory(this.loro.frontiers());
       }
     });
