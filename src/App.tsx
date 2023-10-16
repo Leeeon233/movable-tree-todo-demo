@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import TodoApp from "./todoApp";
 import { updateEachPeer } from "./main";
+import { TodoModel } from "./todoModel";
 
-const App = ({ modelA, modelB }) => {
+const App = ({ modelA, modelB }: { modelA: TodoModel; modelB: TodoModel }) => {
   const [sync, setSync] = useState(true);
   return (
     <div

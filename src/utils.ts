@@ -28,7 +28,7 @@ class Utils {
     if (data) {
       return localStorage.setItem(
         namespace,
-        btoa(String.fromCharCode.apply(null, data))
+        btoa(String.fromCharCode(...data))
       );
     }
     var store = localStorage.getItem(namespace);

@@ -68,7 +68,7 @@ const TodoTree = ({
           const target = p.node;
           model.changeExpanded(target.id, p.expanded);
         }}
-        onChange={(treeData) => {
+        onChange={(_treeData) => {
           //   console.log(treeData);
         }}
         generateNodeProps={(params) => {

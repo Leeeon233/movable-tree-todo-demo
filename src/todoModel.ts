@@ -56,8 +56,6 @@ class TodoModel implements ITodoModel {
   }
 
   public inform() {
-    // Utils.store(this.key, this.loro.exportSnapshot());
-    // TODO: use loro diff
     const state = this.root.getDeepValue();
     this.todos = state.roots.map((root) => {
       return this.getTodos(root);
@@ -68,49 +66,43 @@ class TodoModel implements ITodoModel {
   }
 
   public addChildTodo(title: string, parentId: TreeID): TreeID {
-    let id;
-    this.loro.transact((txn) => {
-      id = this.root.createChild(txn, parentId);
+    const id = this.loro.transact((txn) => {
+      const id = this.root.create(txn, parentId);
       this.root.insertMeta(txn, id, "title", title);
       this.root.insertMeta(txn, id, "completed", false);
       this.root.insertMeta(txn, id, "expanded", true);
+      return id;
     });
-    // this.inform();
-    return id!;
+    return id;
   }
 
   public addRootTodo(title: string): TreeID {
-    let id;
-    this.loro.transact((txn) => {
-      id = this.root.create(txn);
+    const id = this.loro.transact((txn) => {
+      const id = this.root.create(txn, undefined);
       this.root.insertMeta(txn, id, "title", title);
       this.root.insertMeta(txn, id, "completed", false);
       this.root.insertMeta(txn, id, "expanded", true);
+      return id;
     });
-    // this.inform();
-    return id!;
+    return id;
   }
 
   public asRoot(target: TreeID) {
     this.loro.transact((txn) => {
       this.root.asRoot(txn, target);
     });
-    // this.inform();
   }
 
   public move(target: TreeID, parent: TreeID) {
     this.loro.transact((txn) => {
       this.root.move(txn, target, parent);
     });
-
-    // this.inform();
   }
 
   changeExpanded(target: TreeID, expanded: boolean) {
     this.loro.transact((txn) => {
       this.root.insertMeta(txn, target, "expanded", expanded);
     });
-    // this.inform();
   }
 
   public toggleAll(checked: boolean) {
@@ -120,7 +112,6 @@ class TodoModel implements ITodoModel {
         this.root.insertMeta(txn, node, "completed", checked);
       }
     });
-    // this.inform();
   }
 
   public toggle(todoToToggle: TreeID) {
@@ -128,22 +119,18 @@ class TodoModel implements ITodoModel {
       const checked = this.root.getMeta(txn, todoToToggle, "completed");
       this.root.insertMeta(txn, todoToToggle, "completed", !checked);
     });
-    // this.inform();
   }
 
   public destroy(id: TreeID) {
     this.loro.transact((txn) => {
       this.root.delete(txn, id);
     });
-
-    // this.inform();
   }
 
   public save(todoToSave: TreeID, text: string) {
     this.loro.transact((txn) => {
       this.root.insertMeta(txn, todoToSave, "title", text);
     });
-    // this.inform();
   }
 
   public updateFromPeer(other: TodoModel) {
@@ -171,8 +158,6 @@ class TodoModel implements ITodoModel {
         }
       }
     });
-
-    // this.inform();
   }
 }
 
