@@ -2,8 +2,23 @@ import { useState } from "react";
 import TodoApp from "./todoApp";
 import { updateEachPeer } from "./main";
 import { TodoModel } from "./todoModel";
+import Timeline from "./timeline";
 
-const App = ({ modelA, modelB }: { modelA: TodoModel; modelB: TodoModel }) => {
+const App = ({
+  modelA,
+  modelB,
+  history,
+  currentIdx,
+  onCheckout,
+  onReset,
+}: {
+  modelA: TodoModel;
+  modelB: TodoModel;
+  history: any[];
+  currentIdx: number;
+  onCheckout: (idx: number) => void;
+  onReset: () => void;
+}) => {
   const [sync, setSync] = useState(true);
   return (
     <div
@@ -39,6 +54,12 @@ const App = ({ modelA, modelB }: { modelA: TodoModel; modelB: TodoModel }) => {
       <div style={{ flex: 1 }}>
         <TodoApp model={modelB} />
       </div>
+      <Timeline
+        history={history}
+        currentIdx={currentIdx}
+        onChange={onCheckout}
+        onReset={onReset}
+      />
     </div>
   );
 };

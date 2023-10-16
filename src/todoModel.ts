@@ -19,9 +19,12 @@ class TodoModel implements ITodoModel {
   loro: Loro;
   root: LoroTree;
   sync: boolean = true;
-  constructor(loro: Loro, key: string) {
+  addHistory: any;
+  isCheckout: boolean = false;
+  constructor(loro: Loro, key: string, addHistory: any) {
     this.key = key;
     this.loro = loro;
+    this.addHistory = addHistory;
     this.onChanges = [];
     this.root = this.loro.getTree("root");
     const state = this.root.getDeepValue().roots;
@@ -30,6 +33,9 @@ class TodoModel implements ITodoModel {
     });
     this.loro.subscribe((_e) => {
       this.inform();
+      if (!this.isCheckout) {
+        addHistory(this.loro.frontiers());
+      }
     });
   }
 
@@ -45,6 +51,18 @@ class TodoModel implements ITodoModel {
       completed: meta.completed,
       expanded: meta.expanded,
     };
+  }
+
+  public checkout(f: any[]) {
+    this.isCheckout = true;
+    this.loro.checkout(f);
+    this.inform();
+  }
+
+  public reset() {
+    this.loro.attach();
+    this.isCheckout = false;
+    this.inform();
   }
 
   public setSync(sync: boolean) {
