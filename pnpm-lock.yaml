@@ -18,8 +18,8 @@ dependencies:
     specifier: ^4.17.0
     version: 4.17.0
   loro-crdt:
-    specifier: file:~/code/loro/loro-js
-    version: file:../loro/loro-js
+    specifier: ^0.4.0
+    version: 0.4.0
   react:
     specifier: ^18.2.0
     version: 18.2.0
@@ -1338,6 +1338,16 @@ packages:
       js-tokens: 4.0.0
     dev: false
 
+  /loro-crdt@0.4.0:
+    resolution: {integrity: sha512-e9nO3EqCul2KsKfYR3Y30QfLzupDHF9bKUOPq6CzC3e4LrGGJ1QcOqt8hKMttxH7Su+9w7sF9vxyC6KXHhrn0g==}
+    dependencies:
+      loro-wasm: 0.4.0
+    dev: false
+
+  /loro-wasm@0.4.0:
+    resolution: {integrity: sha512-vPk//ZpQmQfNsDqKnuEQQANtJDKZQTTgkyNa/EySLfskLStxJIYeua7PsCA5A0oB2Y9deMuOpD7YeMWo8vq5Yw==}
+    dev: false
+
   /lru-cache@6.0.0:
     resolution: {integrity: sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==}
     engines: {node: '>=10'}
@@ -1785,15 +1795,3 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
     dev: true
-
-  file:../loro/crates/loro-wasm:
-    resolution: {directory: ../loro/crates/loro-wasm, type: directory}
-    name: loro-wasm
-    dev: false
-
-  file:../loro/loro-js:
-    resolution: {directory: ../loro/loro-js, type: directory}
-    name: loro-crdt
-    dependencies:
-      loro-wasm: file:../loro/crates/loro-wasm
-    dev: false

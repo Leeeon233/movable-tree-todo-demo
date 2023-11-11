@@ -42,13 +42,6 @@ const TodoTree = ({
 }: TodoTreeProps) => {
   const treeData = filterTodo(model.todos, nowShowing);
 
-  // const treeData = getTreeFromFlatData({
-  //   flatData: data,
-  //   getKey: (v) => v.id,
-  //   getParentKey: (v) => v.parentId,
-  //   rootKey: ROOT_KEY,
-  // });
-
   return (
     <div style={{ height: 400 }}>
       <SortableTree

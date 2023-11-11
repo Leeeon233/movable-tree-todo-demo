@@ -1,51 +1,46 @@
-import React, { useRef, useState } from "react";
+import  { useRef } from "react";
+import { ITodoModel } from "./interfaces";
 
-interface TimelineProps {
-  history: any[];
-  currentIdx: number;
-  onChange: (idx: number) => void;
-  onReset: () => void;
-}
 
 const Timeline = ({
-  history,
-  currentIdx,
-  onChange,
-  onReset,
-}: TimelineProps) => {
+  model
+}: {model: ITodoModel}) => {
   const slide = useRef(null);
-
+  const history = model.history;
+  
   return (
-    <div className="slidecontainer">
+    <div className="slidecontainer" style={{padding: "8px"}}>
       <p>Check out any version</p>
+      <div style={{display:"flex"}}>
       <input
-        style={{ width: "400px" }}
+        style={{ width: "400px", margin: "0 auto"}}
         ref={slide}
         onChange={(e) => {
           const v = parseInt(e.target.value);
-          onChange(v);
+          model.checkout(v);
         }}
         className="slider"
         type="range"
         min={0}
-        max={history.length}
-        value={currentIdx}
-        id="myRange"
+        max={history.length-1}
+        value={model.version}
       />
-      <button
-        onClick={onReset}
+      {/* <button
+        onClick={model.onAttach}
         style={{
-          width: "100px",
-          height: "40px",
+          width: "70px",
+          height: "30px",
           margin: "0 16px",
-          fontSize: "x-large",
+          fontSize: "large",
           border: "1px solid black",
           borderRadius: "8px",
           boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
         }}
       >
         reset
-      </button>
+      </button> */}
+      </div>
+      
     </div>
   );
 };

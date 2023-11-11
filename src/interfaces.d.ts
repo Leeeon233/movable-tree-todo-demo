@@ -40,9 +40,12 @@ interface ITodoFooterProps {
 
 interface ITodoModel {
   key: any;
+  history: any[];
+  version: number;
   todos: Array<ITodo>;
   onChanges: Array<any>;
   subscribe(onChange);
+  checkout(version: number);
   inform();
   addRootTodo(title: string): TreeID;
   addChildTodo(title: string, parent: TreeID): TreeID;
@@ -52,6 +55,7 @@ interface ITodoModel {
   toggleAll(checked);
   toggle(todoToToggle: TreeID);
   destroy(todo: TreeID);
+  onAttach();
   save(todoToSave: TreeID, text: string);
   clearCompleted();
 }

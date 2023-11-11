@@ -8,6 +8,7 @@ import {
 } from "./constants";
 import TodoTree from "./todoTree";
 import { IAppProps, ITodo } from "./interfaces";
+import Timeline from "./timeline";
 
 export const getActiveTodoCount = (todos: ITodo[]): number => {
   return todos.reduce(function (accum, todo) {
@@ -71,7 +72,7 @@ const TodoApp = ({ model }: IAppProps) => {
             autoFocus={true}
           />
         </header>
-        {model.todos.length > 0 ? (
+       
           <>
             <section className="main">
               <input
@@ -94,9 +95,7 @@ const TodoApp = ({ model }: IAppProps) => {
               />
             </section>
           </>
-        ) : (
-          <></>
-        )}
+        
         {activeTodoCount || completedCount ? (
           <TodoFooter
             count={activeTodoCount}
@@ -104,9 +103,10 @@ const TodoApp = ({ model }: IAppProps) => {
             nowShowing={nowShowing}
             onClearCompleted={() => model.clearCompleted()}
           />
-        ) : (
-          <></>
-        )}
+        ) : undefined}
+       <div>
+        <Timeline model={model} />
+        </div>
       </div>
     </>
   );

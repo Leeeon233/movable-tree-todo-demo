@@ -4,21 +4,15 @@ import { updateEachPeer } from "./main";
 import { TodoModel } from "./todoModel";
 import Timeline from "./timeline";
 
+interface AppProps{
+  modelA: TodoModel;
+  modelB: TodoModel;
+}
+
 const App = ({
   modelA,
   modelB,
-  history,
-  currentIdx,
-  onCheckout,
-  onReset,
-}: {
-  modelA: TodoModel;
-  modelB: TodoModel;
-  history: any[];
-  currentIdx: number;
-  onCheckout: (idx: number) => void;
-  onReset: () => void;
-}) => {
+}: AppProps) => {
   const [sync, setSync] = useState(true);
   return (
     <div
@@ -30,6 +24,7 @@ const App = ({
       }}
     >
       <div style={{ flex: 1 }}>
+      
         <TodoApp model={modelA} />
       </div>
       <button
@@ -54,12 +49,7 @@ const App = ({
       <div style={{ flex: 1 }}>
         <TodoApp model={modelB} />
       </div>
-      <Timeline
-        history={history}
-        currentIdx={currentIdx}
-        onChange={onCheckout}
-        onReset={onReset}
-      />
+      
     </div>
   );
 };
