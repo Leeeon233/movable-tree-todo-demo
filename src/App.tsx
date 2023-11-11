@@ -22,7 +22,7 @@ const App = ({
         alignItems: "center",
       }}
     >
-      <div style={{ flex: 1 }}>
+      <div>
       
         <TodoApp model={modelA} />
       </div>
@@ -45,7 +45,7 @@ const App = ({
       >
         {sync ? "Stop Sync" : "Continue Sync"}
       </button>
-      <div style={{ flex: 1 }}>
+      <div>
         <TodoApp model={modelB} />
       </div>
       
