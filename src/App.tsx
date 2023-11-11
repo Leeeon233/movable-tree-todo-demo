@@ -2,7 +2,6 @@ import { useState } from "react";
 import TodoApp from "./todoApp";
 import { updateEachPeer } from "./main";
 import { TodoModel } from "./todoModel";
-import Timeline from "./timeline";
 
 interface AppProps{
   modelA: TodoModel;

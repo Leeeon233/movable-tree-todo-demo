@@ -25,20 +25,6 @@ const Timeline = ({
         max={history.length-1}
         value={model.version}
       />
-      {/* <button
-        onClick={model.onAttach}
-        style={{
-          width: "70px",
-          height: "30px",
-          margin: "0 16px",
-          fontSize: "large",
-          border: "1px solid black",
-          borderRadius: "8px",
-          boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-        }}
-      >
-        reset
-      </button> */}
       </div>
       
     </div>
