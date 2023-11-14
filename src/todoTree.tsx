@@ -53,7 +53,7 @@ const TodoTree = ({
           const parent = params.nextParentNode;
           if (parent) {
             model.move(target.id, parent.id);
-          } else {
+          } else if (target.parentId) {
             model.asRoot(target.id);
           }
         }}

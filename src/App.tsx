@@ -3,27 +3,16 @@ import TodoApp from "./todoApp";
 import { updateEachPeer } from "./main";
 import { TodoModel } from "./todoModel";
 
-interface AppProps{
+interface AppProps {
   modelA: TodoModel;
   modelB: TodoModel;
 }
 
-const App = ({
-  modelA,
-  modelB,
-}: AppProps) => {
+const App = ({ modelA, modelB }: AppProps) => {
   const [sync, setSync] = useState(true);
   return (
-    <div
-      style={{
-        display: "flex",
-        gap: "100px",
-        flexWrap: "wrap",
-        alignItems: "center",
-      }}
-    >
-      <div>
-      
+    <div className="appContainer">
+      <div className="todoContainer">
         <TodoApp model={modelA} />
       </div>
       <button
@@ -45,10 +34,9 @@ const App = ({
       >
         {sync ? "Stop Sync" : "Continue Sync"}
       </button>
-      <div>
+      <div className="todoContainer">
         <TodoApp model={modelB} />
       </div>
-      
     </div>
   );
 };

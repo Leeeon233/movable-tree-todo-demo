@@ -7,13 +7,13 @@ import { ITodo, ITodoModel } from "./interfaces";
 import { Loro, LoroTree, TreeID } from "loro-crdt";
 import lodash from "lodash";
 
-interface Meta{
+interface Meta {
   title: string;
   completed: boolean;
   expanded: boolean;
 }
 
-interface TreeNode{
+interface TreeNode {
   id: TreeID;
   parent: TreeID | null;
   meta: Meta;
@@ -42,10 +42,12 @@ class TodoModel implements ITodoModel {
     this.loro = loro;
     this.onChanges = [];
     this.tree = this.loro.getTree("tree");
-    this.loro.subscribe((_e) => {
+    this.loro.subscribe((_e: any) => {
       if (!this.isCheckout) {
         const newVersion = this.loro.frontiers();
-        if (!lodash.isEqual(newVersion, this.history[this.history.length-1])){
+        if (
+          !lodash.isEqual(newVersion, this.history[this.history.length - 1])
+        ) {
           this.history.push(newVersion);
           this.version = this.history.length - 1;
         }
@@ -59,9 +61,11 @@ class TodoModel implements ITodoModel {
     return {
       id: root.id,
       parentId: root.parent,
-      children: root.children? root.children.map((node: any) => {
-        return this.getTodos(node);
-      }):[],
+      children: root.children
+        ? root.children.map((node: any) => {
+            return this.getTodos(node);
+          })
+        : [],
       title: meta.title,
       completed: meta.completed,
       expanded: meta.expanded,
@@ -72,14 +76,14 @@ class TodoModel implements ITodoModel {
     this.isCheckout = true;
     this.loro.checkout(this.history[version]);
     this.version = version;
-    if(version === this.history.length-1){
+    if (version === this.history.length - 1) {
       this.onAttach();
     }
     this.inform();
   }
 
   public onAttach() {
-    if(this.loro.is_detached()){
+    if (this.loro.is_detached()) {
       this.loro.attach();
       this.isCheckout = false;
       this.inform();
@@ -96,26 +100,25 @@ class TodoModel implements ITodoModel {
 
   public inform() {
     const state = this.tree.getDeepValue();
-    
-    
+
     const hierarchyTree = getTreeFromFlatData({
       flatData: state,
       getKey: (v) => v.id,
       getParentKey: (v) => v.parent,
       // @ts-ignore
-      rootKey: ROOT_KEY}
-    );
-    this.todos = hierarchyTree.map((root:any) => {
+      rootKey: ROOT_KEY,
+    });
+    this.todos = hierarchyTree.map((root: any) => {
       return this.getTodos(root);
     });
-    
+
     this.onChanges.forEach(function (cb) {
       cb();
     });
   }
 
   public addChildTodo(title: string, parentId: TreeID): TreeID {
-    const id = this.tree.create( parentId);
+    const id = this.tree.create(parentId);
     const metaMap = this.tree.getMeta(id);
     metaMap.set("title", title);
     metaMap.set("completed", false);
@@ -135,13 +138,13 @@ class TodoModel implements ITodoModel {
   }
 
   public asRoot(target: TreeID) {
-      this.tree.root(target);
-      this.loro.commit();
+    this.tree.root(target);
+    this.loro.commit();
   }
 
   public move(target: TreeID, parent: TreeID) {
-      this.tree.mov(target, parent);
-      this.loro.commit();
+    this.tree.mov(target, parent);
+    this.loro.commit();
   }
 
   changeExpanded(target: TreeID, expanded: boolean) {
@@ -167,7 +170,7 @@ class TodoModel implements ITodoModel {
   }
 
   public destroy(id: TreeID) {
-    this.tree.delete( id);
+    this.tree.delete(id);
     this.loro.commit();
   }
 

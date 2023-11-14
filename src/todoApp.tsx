@@ -61,7 +61,7 @@ const TodoApp = ({ model }: IAppProps) => {
 
   return (
     <>
-      <div className="todoapp" style={{ width: "500px" }}>
+      <div className="todoapp" style={{ width: "100%" }}>
         <header className="header">
           <h1>todos</h1>
           <input
@@ -72,30 +72,30 @@ const TodoApp = ({ model }: IAppProps) => {
             autoFocus={true}
           />
         </header>
-       
-          <>
-            <section className="main">
-              <input
-                id="toggle-all"
-                className="toggle-all"
-                type="checkbox"
-                onChange={(e) => model.toggleAll(e.target.checked)}
-                checked={activeTodoCount === 0}
-              />
-              <label htmlFor="toggle-all">Mark all as complete</label>
-              {/* <ul className="todo-list">{todoItems}</ul>
+
+        <>
+          <section className="main">
+            <input
+              id="toggle-all"
+              className="toggle-all"
+              type="checkbox"
+              onChange={(e) => model.toggleAll(e.target.checked)}
+              checked={activeTodoCount === 0}
+            />
+            <label htmlFor="toggle-all">Mark all as complete</label>
+            {/* <ul className="todo-list">{todoItems}</ul>
               <p>Tree</p> */}
-              <TodoTree
-                // data={shownTodos}
-                model={model}
-                editing={editing}
-                setEditing={setEditing}
-                cancel={cancel}
-                nowShowing={nowShowing}
-              />
-            </section>
-          </>
-        
+            <TodoTree
+              // data={shownTodos}
+              model={model}
+              editing={editing}
+              setEditing={setEditing}
+              cancel={cancel}
+              nowShowing={nowShowing}
+            />
+          </section>
+        </>
+
         {activeTodoCount || completedCount ? (
           <TodoFooter
             count={activeTodoCount}
@@ -104,8 +104,8 @@ const TodoApp = ({ model }: IAppProps) => {
             onClearCompleted={() => model.clearCompleted()}
           />
         ) : undefined}
-       <div>
-        <Timeline model={model} />
+        <div>
+          <Timeline model={model} />
         </div>
       </div>
     </>
