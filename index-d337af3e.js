@@ -27013,7 +27013,10 @@ const h8 = 27,
       className: "slidecontainer",
       style: { padding: "8px" },
       children: [
-        J.jsx("p", { children: "Check out any version" }),
+        J.jsx("p", {
+          style: { fontSize: "20px", textAlign: "center" },
+          children: "Check out any version",
+        }),
         J.jsx("div", {
           style: { display: "flex" },
           children: J.jsx("input", {
