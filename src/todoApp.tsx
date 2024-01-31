@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import TodoFooter from "./todoFooter";
 import {
   ALL_TODOS,
   ACTIVE_TODOS,
@@ -37,9 +36,6 @@ const TodoApp = ({ model }: IAppProps) => {
     router.init("/");
   }, []);
   const newInputRef = useRef<HTMLInputElement>(null);
-
-  const activeTodoCount = getActiveTodoCount(model.todos);
-  const completedCount = allTodoCount(model.todos) - activeTodoCount;
 
   const handleNewTodoKeyDown = (event: React.KeyboardEvent) => {
     if (event.keyCode !== ENTER_KEY) {
