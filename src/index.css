@@ -40,30 +40,30 @@ body {
 }
 
 .appContainer {
-  margin: 16px;
   display: flex;
-  gap: 100px;
+  gap: 32px;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
 }
 
 .todoContainer {
-  min-width: 350px;
-  width: 30%;
+  min-width: 300px;
+  width: 40%;
 }
 
-@media (max-width: 1165px) {
+@media (max-width: 800px) {
   .appContainer {
     gap: 32px;
     flex-direction: column;
   }
   .todoContainer {
     width: 66%;
+    max-width: 400px;
   }
 }
 
-@media (max-width: 650px) {
+@media (max-width: 540px) {
   .appContainer {
     gap: 32px;
     flex-direction: column;
@@ -130,7 +130,7 @@ body {
 }
 
 .new-todo {
-  padding: 16px 16px 16px 60px;
+  padding: 16px 16px 16px 16px;
   height: 65px;
   border: none;
   background: rgba(0, 0, 0, 0.003);

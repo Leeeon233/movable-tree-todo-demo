@@ -75,14 +75,14 @@ const TodoApp = ({ model }: IAppProps) => {
 
         <>
           <section className="main">
-            <input
+            {/* <input
               id="toggle-all"
               className="toggle-all"
               type="checkbox"
               onChange={(e) => model.toggleAll(e.target.checked)}
               checked={activeTodoCount === 0}
             />
-            <label htmlFor="toggle-all">Mark all as complete</label>
+            <label htmlFor="toggle-all">Mark all as complete</label> */}
             {/* <ul className="todo-list">{todoItems}</ul>
               <p>Tree</p> */}
             <TodoTree
@@ -96,14 +96,14 @@ const TodoApp = ({ model }: IAppProps) => {
           </section>
         </>
 
-        {activeTodoCount || completedCount ? (
+        {/* {activeTodoCount || completedCount ? (
           <TodoFooter
             count={activeTodoCount}
             completedCount={completedCount}
             nowShowing={nowShowing}
             onClearCompleted={() => model.clearCompleted()}
           />
-        ) : undefined}
+        ) : undefined} */}
         <div>
           <Timeline model={model} />
         </div>

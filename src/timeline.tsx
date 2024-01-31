@@ -8,7 +8,7 @@ const Timeline = ({ model }: { model: ITodoModel }) => {
   return (
     <div className="slidecontainer" style={{ padding: "8px" }}>
       <p style={{ fontSize: "20px", textAlign: "center" }}>
-        Check out any version
+        Checkout any version
       </p>
       <div style={{ display: "flex" }}>
         <input
