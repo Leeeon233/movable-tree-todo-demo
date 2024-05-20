@@ -9,6 +9,7 @@ interface ITodoMeta {
 interface ITodo {
   id: TreeID;
   title: string;
+  index: number;
   completed: boolean;
   expanded: boolean;
   parentId: TreeID | null;
@@ -49,8 +50,7 @@ interface ITodoModel {
   inform();
   addRootTodo(title: string): TreeID;
   addChildTodo(title: string, parent: TreeID): TreeID;
-  move(target: TreeID, parent: TreeID);
-  asRoot(target: TreeID);
+  move(target: TreeID, parent: TreeID | undefined, index: number);
   changeExpanded(target: TreeID, expanded: boolean);
   toggleAll(checked);
   toggle(todoToToggle: TreeID);

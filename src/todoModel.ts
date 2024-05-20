@@ -4,7 +4,7 @@
 /*jshint newcap:false */
 import { getTreeFromFlatData } from "@nosferatu500/react-sortable-tree";
 import { ITodo, ITodoModel } from "./interfaces";
-import { Loro, LoroTree, TreeID } from "loro-crdt";
+import { Loro, LoroTree, TreeID, LoroTreeNode } from "loro-crdt";
 import lodash from "lodash";
 
 interface Meta {
@@ -17,6 +17,7 @@ interface TreeNode {
   id: TreeID;
   parent: TreeID | null;
   meta: Meta;
+  index: number;
   children: TreeNode[];
 }
 
@@ -66,6 +67,7 @@ class TodoModel implements ITodoModel {
             return this.getTodos(node);
           })
         : [],
+      index: root.index,
       title: meta.title,
       completed: meta.completed,
       expanded: meta.expanded,
@@ -83,7 +85,7 @@ class TodoModel implements ITodoModel {
   }
 
   public onAttach() {
-    if (this.loro.is_detached()) {
+    if (this.loro.isDetached()) {
       this.loro.attach();
       this.isCheckout = false;
       this.inform();
@@ -99,7 +101,7 @@ class TodoModel implements ITodoModel {
   }
 
   public inform() {
-    const state = this.tree.getDeepValue();
+    const state = this.tree.toJSON();
 
     const hierarchyTree = getTreeFromFlatData({
       flatData: state,
@@ -118,37 +120,38 @@ class TodoModel implements ITodoModel {
   }
 
   public addChildTodo(title: string, parentId: TreeID): TreeID {
-    const id = this.tree.create(parentId);
-    const metaMap = this.tree.getMeta(id);
+    // @ts-ignore
+    const node: LoroTreeNode<{
+      title: string;
+      completed: boolean;
+      expanded: boolean;
+    }> = this.tree.createNode(parentId);
+    const metaMap = node.data;
     metaMap.set("title", title);
     metaMap.set("completed", false);
     metaMap.set("expanded", true);
     this.loro.commit();
-    return id;
+    return node.id;
   }
 
   public addRootTodo(title: string): TreeID {
-    const id = this.tree.create();
-    const metaMap = this.tree.getMeta(id);
+    const root = this.tree.createNode();
+    const metaMap = root.data;
     metaMap.set("title", title);
     metaMap.set("completed", false);
     metaMap.set("expanded", true);
     this.loro.commit();
-    return id;
+    return root.id;
   }
 
-  public asRoot(target: TreeID) {
-    this.tree.root(target);
-    this.loro.commit();
-  }
-
-  public move(target: TreeID, parent: TreeID) {
-    this.tree.mov(target, parent);
+  public move(target: TreeID, parent: TreeID | undefined, index: number) {
+    this.tree.move(target, parent, index);
     this.loro.commit();
   }
 
   changeExpanded(target: TreeID, expanded: boolean) {
-    const metaMap = this.tree.getMeta(target);
+    const node = this.tree.getNodeByID(target);
+    const metaMap = node.data;
     metaMap.set("expanded", expanded);
     this.loro.commit();
   }
@@ -156,14 +159,14 @@ class TodoModel implements ITodoModel {
   public toggleAll(checked: boolean) {
     const nodes = this.tree.nodes;
     for (const node of nodes) {
-      const metaMap = this.tree.getMeta(node);
+      const metaMap = this.tree.getNodeByID(node).data;
       metaMap.set("completed", checked);
     }
     this.loro.commit();
   }
 
   public toggle(todoToToggle: TreeID) {
-    const metaMap = this.tree.getMeta(todoToToggle);
+    const metaMap = this.tree.getNodeByID(todoToToggle).data;
     const checked = metaMap.get("completed");
     metaMap.set("completed", !checked);
     this.loro.commit();
@@ -175,7 +178,7 @@ class TodoModel implements ITodoModel {
   }
 
   public save(todoToSave: TreeID, text: string) {
-    const metaMap = this.tree.getMeta(todoToSave);
+    const metaMap = this.tree.getNodeByID(todoToSave).data;
     metaMap.set("title", text);
     this.loro.commit();
   }
@@ -184,7 +187,7 @@ class TodoModel implements ITodoModel {
     if (this.sync) {
       const thisVersion = this.loro.version();
       const otherVersion = other.loro.version();
-      if (!isArrayBufferEqual(thisVersion, otherVersion)) {
+      if (!isArrayBufferEqual(thisVersion.encode(), otherVersion.encode())) {
         const update = other.loro.exportFrom(thisVersion);
         this.loro.import(update);
       }
@@ -197,7 +200,7 @@ class TodoModel implements ITodoModel {
     });
     const nodes = this.tree.nodes;
     for (const node of nodes) {
-      const metaMap = this.tree.getMeta(node);
+      const metaMap = this.tree.getNodeByID(node).data;
       const completed = metaMap.get("completed");
       if (completed) {
         this.tree.delete(node);

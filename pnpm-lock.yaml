@@ -17,9 +17,6 @@ dependencies:
   lodash:
     specifier: ^4.17.0
     version: 4.17.0
-  loro-crdt:
-    specifier: ^0.4.0
-    version: 0.4.0
   react:
     specifier: ^18.2.0
     version: 18.2.0
@@ -1336,16 +1333,6 @@ packages:
     hasBin: true
     dependencies:
       js-tokens: 4.0.0
-    dev: false
-
-  /loro-crdt@0.4.0:
-    resolution: {integrity: sha512-e9nO3EqCul2KsKfYR3Y30QfLzupDHF9bKUOPq6CzC3e4LrGGJ1QcOqt8hKMttxH7Su+9w7sF9vxyC6KXHhrn0g==}
-    dependencies:
-      loro-wasm: 0.4.0
-    dev: false
-
-  /loro-wasm@0.4.0:
-    resolution: {integrity: sha512-vPk//ZpQmQfNsDqKnuEQQANtJDKZQTTgkyNa/EySLfskLStxJIYeua7PsCA5A0oB2Y9deMuOpD7YeMWo8vq5Yw==}
     dev: false
 
   /lru-cache@6.0.0:

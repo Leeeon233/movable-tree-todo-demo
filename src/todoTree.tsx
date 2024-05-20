@@ -4,6 +4,7 @@ import TodoItem from "./todoItem";
 import { ITodo, ITodoModel } from "./interfaces";
 import { ACTIVE_TODOS, COMPLETED_TODOS } from "./constants";
 import { allTodoCount, getActiveTodoCount } from "./todoApp";
+import { TreeID } from "loro-crdt";
 
 interface TodoTreeProps {
   model: ITodoModel;
@@ -33,6 +34,19 @@ const filterTodo = (todos: ITodo[], nowShowing: string): ITodo[] => {
     });
 };
 
+const getIndex = (treeData: ITodo[], target: TreeID): number | undefined => {
+  let q = treeData.map((node, index) => ({ node, index }));
+  while (q.length > 0) {
+    const { node, index } = q.shift()!;
+    if (node.id === target) {
+      return index;
+    }
+    if (node.children) {
+      q = q.concat(node.children.map((node, i) => ({ node, index: i })));
+    }
+  }
+};
+
 const TodoTree = ({
   model,
   setEditing,
@@ -41,7 +55,6 @@ const TodoTree = ({
   nowShowing,
 }: TodoTreeProps) => {
   const treeData = filterTodo(model.todos, nowShowing);
-
   return (
     <div style={{ height: 400 }}>
       <SortableTree
@@ -51,10 +64,12 @@ const TodoTree = ({
         onMoveNode={(params) => {
           const target = params.node;
           const parent = params.nextParentNode;
+          const index = getIndex(params.treeData, target.id)!;
+
           if (parent) {
-            model.move(target.id, parent.id);
-          } else if (target.parentId) {
-            model.asRoot(target.id);
+            model.move(target.id, parent.id, index);
+          } else {
+            model.move(target.id, undefined, index);
           }
         }}
         onVisibilityToggle={(p) => {
@@ -63,6 +78,9 @@ const TodoTree = ({
         }}
         onChange={(_treeData) => {
           //   console.log(treeData);
+        }}
+        getNodeKey={({ node }) => {
+          return node.id;
         }}
         generateNodeProps={(params) => {
           const todo: ITodo = params.node;
