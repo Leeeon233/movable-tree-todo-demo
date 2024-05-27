@@ -17,11 +17,7 @@ export const updateEachPeer = () => {
 
 const loroA = new Loro();
 const modelA = new TodoModel(loroA, "react-todosA");
-const rootNode = modelA.addRootTodo("Learning");
-modelA.addChildTodo("React", rootNode);
-modelA.addChildTodo("Vue", rootNode);
-const root2 = modelA.addRootTodo("Reading");
-modelA.addChildTodo("Loro Doc", root2);
+
 const loroB = new Loro();
 const modelB = new TodoModel(loroB, "react-todosB");
 modelA.subscribe(render);
@@ -32,4 +28,19 @@ modelA.subscribe(() => {
 modelB.subscribe(() => {
   modelA.updateFromPeer(modelB);
 });
+
+const rootNode = modelA.addRootTodo("Learning");
+await one_ms();
+modelA.addChildTodo("React", rootNode);
+await one_ms();
+modelA.addChildTodo("Vue", rootNode);
+await one_ms();
+const root2 = modelA.addRootTodo("Reading");
+await one_ms();
+modelA.addChildTodo("Loro Doc", root2);
+await one_ms();
 render();
+
+function one_ms(): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, 1));
+}
