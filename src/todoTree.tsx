@@ -1,5 +1,5 @@
 import SortableTree from "@nosferatu500/react-sortable-tree";
-import "@nosferatu500/react-sortable-tree/style.css";
+import "./tree.css";
 import TodoItem from "./todoItem";
 import { ITodo, ITodoModel } from "./interfaces";
 import { ACTIVE_TODOS, COMPLETED_TODOS } from "./constants";

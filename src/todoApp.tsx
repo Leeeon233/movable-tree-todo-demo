@@ -65,7 +65,6 @@ const TodoApp = ({ model }: IAppProps) => {
             className="new-todo"
             placeholder="What needs to be done?"
             onKeyDown={(e) => handleNewTodoKeyDown(e)}
-            autoFocus={true}
           />
         </header>
 

@@ -18,8 +18,8 @@ dependencies:
     specifier: ^4.17.0
     version: 4.17.0
   loro-crdt:
-    specifier: ^0.16
-    version: 0.16.0
+    specifier: ^0.16.2
+    version: 0.16.2
   react:
     specifier: ^18.2.0
     version: 18.2.0
@@ -1338,14 +1338,14 @@ packages:
       js-tokens: 4.0.0
     dev: false
 
-  /loro-crdt@0.16.0:
-    resolution: {integrity: sha512-U/fwXPfe3GjE96tP97qzIjGoDOz5K/zSNPs1QZ7ZO4pqOAkjkLhBifSYZWW2v1t7ufFgUa4XqXpS1pn7Hyze2A==}
+  /loro-crdt@0.16.2:
+    resolution: {integrity: sha512-+iS6GdKk+ethW98S2jX0Sp475cXKiSG+c6zXvjaGfycSHnQSGiof/gM1NOQ96QyNHXoA0DyCukhpLSNbRe9fLA==}
     dependencies:
-      loro-wasm: 0.16.0
+      loro-wasm: 0.16.2
     dev: false
 
-  /loro-wasm@0.16.0:
-    resolution: {integrity: sha512-2puF09ppACoUwMf9+6BkuYlogY+qZqqStq6RbYYXMhL8Uxrf8DXJdmLA+XGgI4suxXh39jvt6XfwdafqcUuu4A==}
+  /loro-wasm@0.16.2:
+    resolution: {integrity: sha512-8SJuGCGXl69/1TDF6cjERBHsh+NzAATVRFklMGN6M5bq45MH8iO1Npy9KsgarRfOugvlnYNiVhQEYunJenLGxQ==}
     dev: false
 
   /lru-cache@6.0.0:
